@@ -1,0 +1,40 @@
+from getpass import getpass
+import sys
+import time
+import requests
+
+
+# URL da API e chave de acesso
+api_url = "https://haveibeenpwned.com/api/v3/breachedaccount/"
+api_key = "1a671f5972ca42449809658dd02567e7"
+
+# Ler a lista de e-mails do arquivo
+emails = []
+try:
+    with open("C:\\Users\\danil\\Downloads\\lista.txt", "r") as file:
+        emails = [line.strip() for line in file]
+except FileNotFoundError:
+    print("Arquivo 'lista.txt' não encontrado. Verifique o caminho e tente novamente.")
+    sys.exit(1)
+
+# Verificar cada e-mail usando a API
+
+
+for email in emails:
+   
+    response = requests.get(api_url + email, headers={"hibp-api-key": api_key})
+    if response.status_code == 200:
+        breaches = response.json()
+        for breach in breaches:
+            print(f"{email} foi comprometido no vazamento:{breach['Name']}")   
+            
+        time.sleep (20)
+          
+    elif response.status_code == 404:
+        print(f"{email} não foi comprometido.")
+        
+        time.sleep (20)
+        
+    else:
+        print(f"Erro ao verificar {email}: {response.status_code}")
+        
